@@ -1,35 +1,42 @@
-const axios = require('axios')
+import axios from 'axios'
 
 const BASE_URL = 'https://customtypes.prismic.io/customtypes'
-const PRISMIC_TOKEN = process.env.PRISMIC_TOKEN
-const PRISMIC_REPOSITORY = process.env.PRISMIC_REPOSITORY
 
-// Axios instance with defaults
-const instance = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    repository: PRISMIC_REPOSITORY,
-    Authorization: `Bearer ${PRISMIC_TOKEN}`
+class Api {
+  createClient ({ token, repository }) {
+    this.instance = axios.create({
+      baseURL: BASE_URL,
+      headers: {
+        repository: repository,
+        Authorization: `Bearer ${token}`
+      }
+    })
   }
-});
 
-module.exports = {
-  async getAll () {
+  async getAll ({ getDisabled = false } = {}) {
     try {
-      const response = await instance.get()
+      const response = await this.instance.get()
+      let customTypes = null
 
       if (response.status === 200 && response.statusText === 'OK') {
-        return response.data
+        customTypes = response.data
+
+        if (!getDisabled) {
+          customTypes = customTypes.filter(customType => customType.status)
+        }
+
+        return customTypes
       }
 
       return null
     } catch (err) {
       return null
     }
-  },
+  }
+
   async getById (id) {
     try {
-      const response = await instance.get(id)
+      const response = await this.instance.get(id)
 
       if (response.status === 200 && response.statusText === 'OK') {
         return response.data
@@ -41,3 +48,5 @@ module.exports = {
     }
   }
 }
+
+export default new Api()
