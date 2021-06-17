@@ -21,7 +21,7 @@
   },
   "scripts": {
     "lint": "eslint src",
-    "prepublish": "npm run lint"
+    "prepare": "npm run lint"
   },
   "keywords": [],
   "license": "ISC",
