@@ -10,26 +10,42 @@ import { run } from '../src/index.js'
 import Api from '../src/api.js'
 dotenv.config()
 
-const BIN_NAME = 'prismic-ct-versionning'
-const DEFAULT_ARGS = {
-  output: 'custom-types'
-}
+const BIN_NAME = 'pctv'
 
 const cliExecution = meow(`
 
     ${chalk.bold('Usage')}
-      $ ${chalk.cyan(BIN_NAME)} ${chalk.magenta('[command]')}
+      $ ${chalk.cyan(BIN_NAME)} ${chalk.magenta('[command]')} ${chalk.yellow('[--include-disabled --id | --output --o | --token --t | --repository --r]')}
 
     ${chalk.bold('Commands')}
-      ${chalk.magenta('backup')} -
+      ${chalk.magenta('backup')} - Display a checkbox list of all custom types and save all checked one
+
+    ${chalk.bold('Options')}
+      ${chalk.yellow('include-disabled')} - Also save disabled custom types (Default: false)
+      ${chalk.yellow('output')} - Change where custom type files are saved (Default: "custom-types")
+      ${chalk.yellow('token')} - Set Prismic token (Default: from PRISMIC_TOKEN key in .env file)
+      ${chalk.yellow('repository')} - Set Prismic repository ID (Default: from PRISMIC_REPOSITORY key in .env file)
 
     ${chalk.bold('Examples')}
-      $ ${chalk.cyan(BIN_NAME)} ${chalk.magenta('backup')}                                  Display a checkbox list of all tasks
+      $ ${chalk.cyan(BIN_NAME)} ${chalk.magenta('backup')}
+      $ ${chalk.cyan(BIN_NAME)} ${chalk.magenta('backup')} ${chalk.yellow('--include-disabled')}
 `, {
   flags: {
+    includeDisabled: {
+      type: 'boolean',
+      alias: 'id'
+    },
     output: {
       type: 'string',
       alias: 'o'
+    },
+    token: {
+      type: 'string',
+      alias: 't'
+    },
+    repository: {
+      type: 'string',
+      alias: 'r'
     }
   }
 })
@@ -52,18 +68,20 @@ if (!['backup'].includes(command)) {
 
 (async _ => {
   const args = {
-    ...DEFAULT_ARGS,
-    ...cliExecution.flags
+    outputDirectory: cliExecution.flags.output || 'custom-types',
+    prismicToken: cliExecution.flags.token || process.env.PRISMIC_TOKEN,
+    prismicRepository: cliExecution.flags.repository || process.env.PRISMIC_REPOSITORY,
+    includeDisabled: !!cliExecution.flags.includeDisabled
   }
 
   const paths = {
     root: path.resolve(process.cwd()),
-    backupDirectory: path.resolve(process.cwd(), args.output)
+    backupDirectory: path.resolve(process.cwd(), args.outputDirectory)
   }
 
   Api.createClient({
-    token: process.env.PRISMIC_TOKEN,
-    repository: process.env.PRISMIC_REPOSITORY
+    token: args.prismicToken,
+    repository: args.prismicRepository
   })
 
   await run(command, args, paths)

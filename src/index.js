@@ -8,7 +8,7 @@ import { createDirectory, createFile } from './files.js'
 
 export const run = async (command, args, paths) => {
   if (command === 'backup') {
-    const prismicCustomTypes = await Api.getAll()
+    const prismicCustomTypes = await Api.getAll({ getDisabled: args.includeDisabled })
 
     const customTypesChoiceIds = (await inquirer
       .prompt([
