@@ -66,7 +66,7 @@ if (cliExecution.flags.v) {
 
 // Check command
 const command = cliExecution.input[0]
-if (!['pull'].includes(command)) {
+if (!['pull', 'push'].includes(command)) {
   cliExecution.showHelp()
 }
 
