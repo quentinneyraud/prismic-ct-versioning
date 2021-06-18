@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+/* eslint-disable no-console */
+
 import path from 'path'
 import dotenv from 'dotenv'
 
@@ -18,7 +20,7 @@ const cliExecution = meow(`
       $ ${chalk.cyan(BIN_NAME)} ${chalk.magenta('[command]')} ${chalk.yellow('[--include-disabled --id | --output --o | --token --t | --repository --r]')}
 
     ${chalk.bold('Commands')}
-      ${chalk.magenta('backup')} - Display a checkbox list of all custom types and save all checked one
+      ${chalk.magenta('pull')} - Display a checkbox list of all custom types and save all checked one
 
     ${chalk.bold('Options')}
       ${chalk.yellow('include-disabled')} - Also save disabled custom types (Default: false)
@@ -27,8 +29,8 @@ const cliExecution = meow(`
       ${chalk.yellow('repository')} - Set Prismic repository ID (Default: from PRISMIC_REPOSITORY key in .env file)
 
     ${chalk.bold('Examples')}
-      $ ${chalk.cyan(BIN_NAME)} ${chalk.magenta('backup')}
-      $ ${chalk.cyan(BIN_NAME)} ${chalk.magenta('backup')} ${chalk.yellow('--include-disabled')}
+      $ ${chalk.cyan(BIN_NAME)} ${chalk.magenta('pull')}
+      $ ${chalk.cyan(BIN_NAME)} ${chalk.magenta('pull')} ${chalk.yellow('--include-disabled')}
 `, {
   flags: {
     includeDisabled: {
@@ -50,6 +52,8 @@ const cliExecution = meow(`
   }
 })
 
+console.log()
+
 // Show help if -h flag is present
 if (cliExecution.flags.h) {
   cliExecution.showHelp()
@@ -62,27 +66,43 @@ if (cliExecution.flags.v) {
 
 // Check command
 const command = cliExecution.input[0]
-if (!['backup'].includes(command)) {
+if (!['pull'].includes(command)) {
   cliExecution.showHelp()
 }
 
-(async _ => {
-  const args = {
-    outputDirectory: cliExecution.flags.output || 'custom-types',
-    prismicToken: cliExecution.flags.token || process.env.PRISMIC_TOKEN,
-    prismicRepository: cliExecution.flags.repository || process.env.PRISMIC_REPOSITORY,
-    includeDisabled: !!cliExecution.flags.includeDisabled
-  }
+const args = {
+  outputDirectory: cliExecution.flags.output || 'custom-types',
+  prismicToken: cliExecution.flags.token || process.env.PRISMIC_TOKEN,
+  prismicRepository: cliExecution.flags.repository || process.env.PRISMIC_REPOSITORY,
+  includeDisabled: !!cliExecution.flags.includeDisabled
+}
 
-  const paths = {
-    root: path.resolve(process.cwd()),
-    backupDirectory: path.resolve(process.cwd(), args.outputDirectory)
-  }
+if (!args.prismicToken) {
+  console.log(chalk.red('Missing Prismic Custom Type API token'))
+  console.log(`Request Custom Types API feature activation ${chalk.blue('https://community.prismic.io/t/feature-activations-graphql-integration-fields-etc/847')}`)
+  console.log(`and generate token as explained here ${chalk.blue('https://prismic.io/docs/technologies/custom-types-api#permanent-token-recommended')}`)
+  console.log('Then create a .env file with PRISMIC_TOKEN key or use --token flag')
+  process.exit(0)
+}
 
-  Api.createClient({
-    token: args.prismicToken,
-    repository: args.prismicRepository
-  })
+if (!args.prismicRepository) {
+  console.log(chalk.red('Missing Prismic repositiory ID'))
+  console.log(`Request Custom Types API feature activation ${chalk.blue('https://community.prismic.io/t/feature-activations-graphql-integration-fields-etc/847')}`)
+  console.log('Then create a .env file with PRISMIC_REPOSITORY key or use --repository flag')
+  process.exit(0)
+}
 
+const paths = {
+  root: path.resolve(process.cwd()),
+  backupDirectory: path.resolve(process.cwd(), args.outputDirectory)
+}
+
+Api.createClient({
+  token: args.prismicToken,
+  repository: args.prismicRepository
+})
+
+const r = async _ => {
   await run(command, args, paths)
-})()
+}
+r()

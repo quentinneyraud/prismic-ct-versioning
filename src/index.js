@@ -4,10 +4,10 @@ import path from 'path'
 import chalk from 'chalk'
 import Api from './api.js'
 import inquirer from 'inquirer'
-import { createDirectory, createFile } from './files.js'
+import { createDirectory, createFile, removeDirectory } from './files.js'
 
 export const run = async (command, args, paths) => {
-  if (command === 'backup') {
+  if (command === 'pull') {
     const prismicCustomTypes = await Api.getAll({ getDisabled: args.includeDisabled })
 
     const customTypesChoiceIds = (await inquirer
@@ -29,13 +29,13 @@ export const run = async (command, args, paths) => {
 
     console.log()
 
-    const date = new Date()
+    await removeDirectory(path.resolve(paths.backupDirectorny, '/*.json'))
 
     const promises = prismicCustomTypes
       .filter(customType => customTypesChoiceIds.includes(customType.id))
       .map(async customType => {
-        const fileName = `${customType.id}_${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}_${date.getHours()}:${date.getMinutes()}.json`
-        const fileNamePath = path.resolve(paths.backupDirectory, customType.id, fileName)
+        const fileName = `${customType.id}.json`
+        const fileNamePath = path.resolve(paths.backupDirectory, fileName)
 
         await createDirectory(path.dirname(fileNamePath))
         await createFile(fileNamePath, JSON.stringify(customType.json, null, 2))
