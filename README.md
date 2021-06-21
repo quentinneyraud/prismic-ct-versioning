@@ -24,7 +24,7 @@ As described here [https://prismic.io/docs/technologies/custom-types-api#permane
 
 ### Create a .env file
 
-Create a .env file with token and repository ID (you can also pass them from command arguments)
+Create a .env file in your working directory with token and repository ID (you can also pass them from command arguments)
 
 ```
 PRISMIC_TOKEN=your-api-token
@@ -40,7 +40,7 @@ PRISMIC_REPOSITORY=your-repository-id
 
 ### Pull
 
-Get all Prismic custom types from your repository and save them 
+Get all Prismic custom types from your repository and save them in `output` directory.
 
 ### Push
 
@@ -63,8 +63,8 @@ Directory where your Prismic custom types are saved (relative to current directo
 
 ### --token (alias: --t)
 
-Prismic Custom Types API token 
+Prismic Custom Types API token (Override .env PRISMIC_TOKEN variable).
 
 ### --repository (alias: --r)
 
-Prismic repository ID 
+Prismic repository ID (Override .env PRISMIC_REPOSITORY variable).
