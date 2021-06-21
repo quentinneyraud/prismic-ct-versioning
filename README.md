@@ -74,5 +74,4 @@ Prismic repository ID (Override .env PRISMIC_REPOSITORY variable).
 ## TODOS
 
 - [ ] Error handling
-- [ ] Add Eslint
 - [ ] Warning if content exists that is related to a custom type that will be updated/deleted 
