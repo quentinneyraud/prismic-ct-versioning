@@ -3,12 +3,12 @@
 import inquirer from 'inquirer'
 import path from 'path'
 import chalk from 'chalk'
-import Api from '../api'
-import { createDirectory, createFile, removeDirectory } from '../files'
+import Api from '../api.js'
+import { createDirectory, createFile, removeDirectory } from '../files.js'
 
 export default async (args, paths) => {
   // Get all custom types from Prismic API
-  const prismicCustomTypes = await Api.getAll({ getDisabled: args.includeDisabled })
+  const prismicCustomTypes = await Api.getAll({ excludeDisabled: args.excludeDisabled })
 
   // Ask which one user want to save
   const customTypesChoiceIds = (await inquirer
@@ -32,7 +32,7 @@ export default async (args, paths) => {
 
   // Ensure backup directory exists and remove all json files in it
   await createDirectory(paths.backupDirectory)
-  await removeDirectory(path.resolve(paths.backupDirectory, '/*.json'))
+  await removeDirectory(path.join(paths.backupDirectory, '/*.json'))
 
   const promises = prismicCustomTypes
   // Keep only custom types checked by user
@@ -40,7 +40,7 @@ export default async (args, paths) => {
     .map(async customType => {
       // Create filename and path
       const fileName = `${customType.id}.json`
-      const fileNamePath = path.resolve(paths.backupDirectory, fileName)
+      const fileNamePath = path.join(paths.backupDirectory, fileName)
 
       // Create file with API response
       await createFile(fileNamePath, JSON.stringify(customType, null, 2))

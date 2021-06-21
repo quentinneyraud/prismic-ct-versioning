@@ -3,16 +3,20 @@
 import inquirer from 'inquirer'
 import path from 'path'
 import chalk from 'chalk'
-import Api from '../api'
-import { readFile, readDirectory } from '../files'
+import Api from '../api.js'
+import { readFile, readDirectory } from '../files.js'
+
+const capitalize = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
 
 export default async (args, paths) => {
   // Get all custom types from Prismic API
-  const prismicCustomTypes = await Api.getAll({ getDisabled: true })
+  const prismicCustomTypes = await Api.getAll()
 
   // Get all custom types from backup directory
   const backupCustomTypes = await readDirectory(paths.backupDirectory)
-  const readFilesPromises = backupCustomTypes.map(backupCustomTypeFile => readFile(path.resolve(paths.backupDirectory, backupCustomTypeFile)))
+  const readFilesPromises = backupCustomTypes.map(backupCustomTypeFile => readFile(path.join(paths.backupDirectory, backupCustomTypeFile)))
   const fileCustomTypes = (await Promise.all(readFilesPromises)).map(JSON.parse)
 
   const updates = []
@@ -67,7 +71,7 @@ export default async (args, paths) => {
         choices.push(new inquirer.Separator(actionType.separatorText))
         choices.push(...actionType.items.map(customType => {
           return {
-            name: `Create ${customType.label} (${customType.id})`,
+            name: `${capitalize(actionType.action)} ${customType.label} (${customType.id})`,
             value: { action: actionType.action, customType },
             checked: true
           }

@@ -13,7 +13,7 @@ class Api {
     })
   }
 
-  async getAll ({ getDisabled = false } = {}) {
+  async getAll ({ excludeDisabled = false } = {}) {
     try {
       const response = await this.instance.get()
       let customTypes = null
@@ -21,7 +21,7 @@ class Api {
       if (response.status === 200 && response.statusText === 'OK') {
         customTypes = response.data
 
-        if (!getDisabled) {
+        if (excludeDisabled) {
           customTypes = customTypes.filter(customType => customType.status)
         }
 

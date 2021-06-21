@@ -23,7 +23,7 @@ const cliExecution = meow(`
       ${chalk.magenta('pull')} - Display a checkbox list of all custom types and save all checked one
 
     ${chalk.bold('Options')}
-      ${chalk.yellow('include-disabled')} - Also save disabled custom types (Default: false)
+      ${chalk.yellow('exclude-disabled')} - Exclude disabled custom types from pull (Default: false)
       ${chalk.yellow('output')} - Change where custom type files are saved (Default: "custom-types")
       ${chalk.yellow('token')} - Set Prismic token (Default: from PRISMIC_TOKEN key in .env file)
       ${chalk.yellow('repository')} - Set Prismic repository ID (Default: from PRISMIC_REPOSITORY key in .env file)
@@ -33,9 +33,9 @@ const cliExecution = meow(`
       $ ${chalk.cyan(BIN_NAME)} ${chalk.magenta('pull')} ${chalk.yellow('--include-disabled')}
 `, {
   flags: {
-    includeDisabled: {
+    excludeDisabled: {
       type: 'boolean',
-      alias: 'id'
+      alias: 'ed'
     },
     output: {
       type: 'string',
@@ -74,7 +74,7 @@ const args = {
   outputDirectory: cliExecution.flags.output || 'custom-types',
   prismicToken: cliExecution.flags.token || process.env.PRISMIC_TOKEN,
   prismicRepository: cliExecution.flags.repository || process.env.PRISMIC_REPOSITORY,
-  includeDisabled: !!cliExecution.flags.includeDisabled
+  excludeDisabled: !!cliExecution.flags.excludeDisabled
 }
 
 if (!args.prismicToken) {
@@ -82,19 +82,19 @@ if (!args.prismicToken) {
   console.log(`Request Custom Types API feature activation ${chalk.blue('https://community.prismic.io/t/feature-activations-graphql-integration-fields-etc/847')}`)
   console.log(`and generate token as explained here ${chalk.blue('https://prismic.io/docs/technologies/custom-types-api#permanent-token-recommended')}`)
   console.log('Then create a .env file with PRISMIC_TOKEN key or use --token flag')
-  process.exit(0)
+  process.exit(9)
 }
 
 if (!args.prismicRepository) {
   console.log(chalk.red('Missing Prismic repositiory ID'))
   console.log(`Request Custom Types API feature activation ${chalk.blue('https://community.prismic.io/t/feature-activations-graphql-integration-fields-etc/847')}`)
   console.log('Then create a .env file with PRISMIC_REPOSITORY key or use --repository flag')
-  process.exit(0)
+  process.exit(9)
 }
 
 const paths = {
   root: path.resolve(process.cwd()),
-  backupDirectory: path.resolve(process.cwd(), args.outputDirectory)
+  backupDirectory: path.join(process.cwd(), args.outputDirectory)
 }
 
 Api.createClient({
@@ -103,6 +103,12 @@ Api.createClient({
 })
 
 const r = async _ => {
-  await run(command, args, paths)
+  try {
+    await run(command, args, paths)
+    process.exit(0)
+  } catch (err) {
+    console.log(chalk.red(err))
+    process.exit(1)
+  }
 }
 r()
