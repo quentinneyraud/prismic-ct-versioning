@@ -17,7 +17,7 @@ const BIN_NAME = 'pctv'
 const cliExecution = meow(`
 
     ${chalk.bold('Usage')}
-      $ ${chalk.cyan(BIN_NAME)} ${chalk.magenta('[command]')} ${chalk.yellow('[--include-disabled --id | --output --o | --token --t | --repository --r]')}
+      $ ${chalk.cyan(BIN_NAME)} ${chalk.magenta('[command]')} ${chalk.yellow('[--exclude-disabled --ed | --output --o | --token --t | --repository --r]')}
 
     ${chalk.bold('Commands')}
       ${chalk.magenta('pull')} - Display a checkbox list of all custom types and save all checked one
@@ -30,7 +30,7 @@ const cliExecution = meow(`
 
     ${chalk.bold('Examples')}
       $ ${chalk.cyan(BIN_NAME)} ${chalk.magenta('pull')}
-      $ ${chalk.cyan(BIN_NAME)} ${chalk.magenta('pull')} ${chalk.yellow('--include-disabled')}
+      $ ${chalk.cyan(BIN_NAME)} ${chalk.magenta('pull')} ${chalk.yellow('--exclude-disabled')}
 `, {
   flags: {
     excludeDisabled: {
