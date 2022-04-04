@@ -1,6 +1,7 @@
 # Prismic Custom Types Versionning
 
 > CLI commands to save and restore Prismic custom types
+> [Video](https://twitter.com/quentin_neyraud/status/1407000398699827200)
 
 
 ## Installation 

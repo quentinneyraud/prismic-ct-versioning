@@ -43,7 +43,7 @@ export default async (args, paths) => {
       const fileNamePath = path.join(paths.backupDirectory, fileName)
 
       // Create file with API response
-      await createFile(fileNamePath, JSON.stringify(customType, null, 2))
+      await createFile(fileNamePath, JSON.stringify(customType, null, 2).concat('\n'))
 
       console.log(chalk.green(`✅  "${customType.label}" custom type saved in : `) + path.relative(paths.root, fileNamePath))
     })
