@@ -1,6 +1,6 @@
 {
   "name": "prismic-ct-versionning",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "",
   "exports": "./bin/index.js",
   "type": "module",
