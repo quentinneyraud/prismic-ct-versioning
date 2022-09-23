@@ -9,7 +9,8 @@
   },
   "files": [
     "bin/*",
-    "src/*"
+    "src/*",
+    "package.json"
   ],
   "author": {
     "name": "Quentin Neyraud",
