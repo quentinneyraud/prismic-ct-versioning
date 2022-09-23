@@ -32,6 +32,7 @@ const cliExecution = meow(`
       $ ${chalk.cyan(BIN_NAME)} ${chalk.magenta('pull')}
       $ ${chalk.cyan(BIN_NAME)} ${chalk.magenta('pull')} ${chalk.yellow('--exclude-disabled')}
 `, {
+  importMeta: import.meta,
   flags: {
     excludeDisabled: {
       type: 'boolean',
