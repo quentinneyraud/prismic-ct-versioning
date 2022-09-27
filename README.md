@@ -1,4 +1,4 @@
-# Prismic Custom Types Versionning
+# Prismic Custom Types Versioning
 
 > CLI commands to save and restore Prismic custom types
 > [Video](https://twitter.com/quentin_neyraud/status/1407000398699827200)
@@ -7,7 +7,7 @@
 ## Installation 
 
 ```bash
-npm install -g prismic-ct-versionning
+npm install -g prismic-ct-versioning
 ```
 
 
